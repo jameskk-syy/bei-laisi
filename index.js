@@ -57,8 +57,8 @@ app.post('/ussd', async (req, res) => {
             } else {
                 const selectedAuction = result[selectedAuctionIndex];
                 response = `CON choose payment method 
-                            1 Airtel Money
-                            2 MOMO`;
+                1 Airtel Money
+                2 MOMO`;
                 // Here, you can add the logic to save the bid amount to the database.
             }
         }
