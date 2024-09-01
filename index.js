@@ -31,7 +31,11 @@ app.post('/ussd', async (req, res) => {
     const result = await getAuctions();
     const itemsPerPage = 5;
 
-    if (text === "") {
+    // Check if the user selects to go back to the main menu
+    if (textArray[textArray.length - 1] === "00") {
+        response = `CON Welcome back to the main menu \n\n`;
+        response += listAuctions(result, 1, itemsPerPage);
+    } else if (text === "") {
         response = `CON Welcome to Laisi Reverse Auctions \n\n`;
         response += listAuctions(result, 1, itemsPerPage);
     } else if (textArray.length === 1) {
@@ -66,9 +70,9 @@ function listAuctions(auctions, page, itemsPerPage) {
     // If there are more items to show, offer the option for the next page
     if (end < auctions.length) {
         response += `\n#. Next page\n`;
-    } else {
-        response += `\n00. Go back to the main menu\n`;
     }
+    
+    response += `\n00. Go back to the main menu\n`;
 
     return response;
 }
