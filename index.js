@@ -29,10 +29,16 @@ app.post('/ussd', async (req, res) => {
     const textArray = text.split("*");
     const itemsPerPage = 5;
 
-    // Calculate the current page
-    const currentPage = textArray.includes("#") ? parseInt(textArray[textArray.length - 2], 10) + 1 : 1;
-    const selectedOption = textArray[textArray.length - 1]; // Get the last input from the user
-
+    // Determine the current page based on the last valid page number
+    let currentPage = 1;
+    for (let i = 0; i < textArray.length; i++) {
+        if (!isNaN(textArray[i])) {
+            currentPage = parseInt(textArray[i], 10);
+        } else if (textArray[i] === "#") {
+            currentPage += 1;
+        }
+    }
+    
     const result = await getAuctions();
     const totalItems = result.length;
 
@@ -40,16 +46,17 @@ app.post('/ussd', async (req, res) => {
         // Initial menu
         response = `CON Welcome to Laisi Reverse Auctions \n\n`;
         response += listAuctions(result, 1, itemsPerPage);
-    } else if (selectedOption === "#") {
+    } else if (textArray.includes("#")) {
         // Next page logic
         response = `CON ${listAuctions(result, currentPage, itemsPerPage)}`;
-    } else if (selectedOption === "00") {
+    } else if (textArray.includes("00")) {
         // Go back to main menu
         response = `CON Welcome back to the main menu \n\n`;
         response += listAuctions(result, 1, itemsPerPage);
     } else {
         // User made a selection
-        const selectedAuctionIndex = (currentPage - 1) * itemsPerPage + parseInt(selectedOption, 10) - 1;
+        const selectedOption = parseInt(textArray[textArray.length - 1], 10);
+        const selectedAuctionIndex = (currentPage - 1) * itemsPerPage + selectedOption - 1;
 
         if (selectedAuctionIndex >= 0 && selectedAuctionIndex < totalItems) {
             const selectedAuction = result[selectedAuctionIndex];
