@@ -119,7 +119,7 @@ function listAuctions(auctions, page, itemsPerPage) {
     const end = start + itemsPerPage;
     const paginatedAuctions = auctions.slice(start, end);
 
-    let response = `Bid on our live auctions:\n`;
+    let response = `END Bid on our live auctions:\n`;
     paginatedAuctions.forEach((auction, index) => {
         response += `${start + index + 1}. ${auction.auctionName}\n`;
     });
