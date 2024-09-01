@@ -66,10 +66,10 @@ app.post('/ussd', async (req, res) => {
     }
     else if(textArray.length === 3){
         const selectedOption = textArray[2];
-        if(selectedOption === 1){
+        if(selectedOption === "1"){
             response = `END This is Airtel`;
         }
-        else if(selectedOption === 2){
+        else if(selectedOption === "2"){
             response = `END This is Momo.\n`;
         }
         } 
