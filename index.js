@@ -28,21 +28,39 @@ app.post('/ussd', async (req, res) => {
         // Initial welcome message and first page of auctions
         response = `CON Welcome to Laisi Reverse Auctions \n\n`;
         response += `Bid on our live auctions:\n`;
-        result.forEach((resu,index)=>{
-            response += `${index+1}. ${resu.auctionName}\n`
-        })
+        result.forEach((resu, index) => {
+            response += `${index + 1}. ${resu.auctionName}\n`;
+        });
     } else if (textArray.length === 1) {
         const input = textArray[0];
-            const selectedOption = parseInt(input);
-            const selectedAuctionIndex = selectedOption - 1;
+        const selectedOption = parseInt(input);
+        const selectedAuctionIndex = selectedOption - 1;
 
-            if (selectedAuctionIndex >= 0 && selectedAuctionIndex < result.length) {
-                const selectedAuction = result[selectedAuctionIndex];
-                response = `CON You selected ${selectedAuction.auctionName}\n`;
-                response += `Please enter your bid amount:`;
+        if (selectedAuctionIndex >= 0 && selectedAuctionIndex < result.length) {
+            const selectedAuction = result[selectedAuctionIndex];
+            response = `CON You selected ${selectedAuction.auctionName}\n`;
+            response += `Please enter your bid amount:`;
+        } else {
+            response = `END Invalid selection. Please try again.\n`;
+        }
+    } else if (textArray.length === 2) {
+        // Handle bid amount input
+        const selectedOption = parseInt(textArray[0]);
+        const selectedAuctionIndex = selectedOption - 1;
+
+        if (selectedAuctionIndex >= 0 && selectedAuctionIndex < result.length) {
+            const bidAmount = parseFloat(textArray[1]);
+
+            if (isNaN(bidAmount) || bidAmount <= 0) {
+                response = `END Invalid bid amount. Please try again.\n`;
             } else {
-                response = `END Invalid selection. Please try again.\n`;
+                const selectedAuction = result[selectedAuctionIndex];
+                response = `END You have successfully placed a bid of ${bidAmount} on ${selectedAuction.auctionName}.\n`;
+                // Here, you can add the logic to save the bid amount to the database.
             }
+        } else {
+            response = `END Invalid selection. Please try again.\n`;
+        }
     }
 
     res.set('content-type', 'text/plain');
