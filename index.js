@@ -28,6 +28,9 @@ app.post('/ussd', async (req, res) => {
         // Initial welcome message and first page of auctions
         response = `CON Welcome to Laisi Reverse Auctions \n\n`;
         response += `Bid on our live auctions:\n\n`;
+        result.forEach((resu,index)=>{
+            response += `${index+1}. ${resu.auctionName}\n`
+        })
     } else if (textArray.length === 1) {
         const input = textArray[0];
             const selectedOption = parseInt(input);
