@@ -35,9 +35,6 @@ app.post('/ussd',async(req,res)=>{
     response += `${index+1} . ${resq.auctionName} \n`
   });
  }
- else if(text == "1*"){
-  response = `End hello`;
- }
  res.set('content-type:text/plain');
  res.send(response);
 });
