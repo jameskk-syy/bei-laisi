@@ -56,7 +56,9 @@ app.post('/ussd', async (req, res) => {
                 response = `END Invalid bid amount. Please try again.\n`;
             } else {
                 const selectedAuction = result[selectedAuctionIndex];
-                response = `END You have successfully placed a bid of ${bidAmount} on ${selectedAuction.auctionName}.\n`;
+                response = `CON choose payment method 
+                1 Airtel Money
+                2 MOMO`;
                 // Here, you can add the logic to save the bid amount to the database.
             }
         } else {
