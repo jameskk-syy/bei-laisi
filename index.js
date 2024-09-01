@@ -16,57 +16,54 @@ const fireStoreCollection = collection(fireStoreDb, "Auctions");
 app.get('/', (req, res) => {
     res.send('hello world');
 });
+
 app.post('/ussd', async (req, res) => {
     let response = "";
-    const {
-        sessionId,
-        phoneNumber,
-        serviceCode,
-        text
-    } = req.body;
+    const { sessionId, phoneNumber, serviceCode, text } = req.body;
 
     const textArray = text.split("*");
     const itemsPerPage = 5;
-    
-    let currentPage = 1;
-    let lastSelection = textArray[textArray.length - 1];
 
-    // Calculate the correct current page
-    if (lastSelection === "#") {
+    // Determine the current page based on user input
+    let currentPage = 1;
+    const lastInput = textArray[textArray.length - 1];
+
+    if (lastInput === "#") {
+        // If user selects '#', move to the next page
         currentPage = parseInt(textArray[textArray.length - 2], 10) + 1;
-    } else if (!isNaN(lastSelection)) {
-        currentPage = Math.ceil(parseInt(lastSelection, 10) / itemsPerPage);
+    } else if (!isNaN(lastInput)) {
+        // If user selects an item, determine the page based on the item number
+        currentPage = Math.ceil(parseInt(lastInput, 10) / itemsPerPage);
     }
 
     const result = await getAuctions();
-    const totalItems = result.length;
 
     if (text === "") {
-        // Initial menu
+        // Initial menu display
         response = `CON Welcome to Laisi Reverse Auctions \n\n`;
         response += listAuctions(result, 1, itemsPerPage);
-    } else if (lastSelection === "#") {
-        // Next page logic
+    } else if (lastInput === "#") {
+        // Show the next page of auctions
         response = `CON ${listAuctions(result, currentPage, itemsPerPage)}`;
-    } else if (lastSelection === "00") {
-        // Go back to main menu
+    } else if (lastInput === "00") {
+        // Go back to the main menu
         response = `CON Welcome back to the main menu \n\n`;
         response += listAuctions(result, 1, itemsPerPage);
     } else {
-        // User made a selection
-        const selectedOption = parseInt(lastSelection, 10);
+        // Handle auction selection
+        const selectedOption = parseInt(lastInput, 10);
         const selectedAuctionIndex = (currentPage - 1) * itemsPerPage + selectedOption - 1;
 
-        if (selectedAuctionIndex >= 0 && selectedAuctionIndex < totalItems) {
+        if (selectedAuctionIndex >= 0 && selectedAuctionIndex < result.length) {
             const selectedAuction = result[selectedAuctionIndex];
             response = `CON You selected ${selectedAuction.auctionName}\n`;
             response += `Please enter your bid amount:`;
         } else {
-            response = `CON Invalid selection. Please try again.\n`;
-            response += listAuctions(result, currentPage, itemsPerPage);
+            response = `END Invalid selection. Please try again.\n`;
         }
     }
 
+    // Ensure the response starts with either 'CON' or 'END'
     if (!response.startsWith("CON") && !response.startsWith("END")) {
         response = "END Dear customer, the network is experiencing technical problems and your request was not processed. Please try again later.";
     }
@@ -74,50 +71,6 @@ app.post('/ussd', async (req, res) => {
     res.set('content-type', 'text/plain');
     res.send(response);
 });
-
-// app.post('/ussd', async (req, res) => {
-//     let response = "";
-//     const {
-//         sessionId,
-//         phoneNumber,
-//         serviceCode,
-//         text
-//     } = req.body;
-
-//     const textArray = text.split("*");
-//     const currentPage = textArray[0] === "" || isNaN(textArray[0]) ? 1 : parseInt(textArray[0], 10);
-//     const result = await getAuctions();
-//     const itemsPerPage = 5;
-
-//     // Check if the user selects to go back to the main menu
-//     if (textArray[textArray.length - 1] === "00") {
-//         response = `CON Welcome back to the main menu \n\n`;
-//         response += listAuctions(result, 1, itemsPerPage);
-//     } else if (text === "") {
-//         response = `CON Welcome to Laisi Reverse Auctions \n\n`;
-//         response += listAuctions(result, 1, itemsPerPage);
-//     }else if (textArray.length === 1) {
-//         const input = textArray[0];
-//         if (input === "#") {
-//             response = `CON ${listAuctions(result, currentPage + 1, itemsPerPage)}`;
-//         } else {
-//             const selectedOption = parseInt(input, 10);
-//             const selectedAuctionIndex = (currentPage - 1) * itemsPerPage + selectedOption - 1;
-    
-//             if (selectedAuctionIndex >= 0 && selectedAuctionIndex < result.length) {
-//                 const selectedAuction = result[selectedAuctionIndex];
-//                 response = `CON You selected ${selectedAuction.auctionName}\n`;
-//                 response += `Please enter your bid amount:`;
-//             } else {
-//                 response = `END Invalid selection. Please try again.\n`;
-//             }
-//         }
-//     }
-    
-
-//     res.set('content-type', 'text/plain');
-//     res.send(response);
-// });
 
 function listAuctions(auctions, page, itemsPerPage) {
     const start = (page - 1) * itemsPerPage;
