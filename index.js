@@ -65,7 +65,7 @@ app.post('/ussd', async (req, res) => {
         }
     }
     else if(textArray.length === 3){
-        const selectedOption = textArray[2];
+        const selectedOption = textArray[6];
         response = `END ${selectedOption}`;
         } 
 
