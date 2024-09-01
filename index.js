@@ -29,7 +29,7 @@ app.post('/ussd', async (req, res) => {
     const textArray = text.split("*");
     const currentPage = textArray[0] === "" || isNaN(textArray[0]) ? 1 : parseInt(textArray[0], 10);
     const result = await getAuctions();
-    const itemsPerPage = 10;
+    const itemsPerPage = 5;
 
     // Check if the user selects to go back to the main menu
     if (textArray[textArray.length - 1] === "00") {
@@ -62,7 +62,7 @@ function listAuctions(auctions, page, itemsPerPage) {
     const end = start + itemsPerPage;
     const paginatedAuctions = auctions.slice(start, end);
 
-    let response = "CON Bid on our live auctions:\n";
+    let response = ` Bid on our live auctions:\n`;
     paginatedAuctions.forEach((auction, index) => {
         response += `${start + index + 1}. ${auction.auctionName}\n`;
     });
