@@ -40,7 +40,7 @@ app.post('/ussd', async (req, res) => {
         response += listAuctions(result, 1, itemsPerPage);
     } else if (textArray.length === 1) {
         if (textArray[0] === "#") {
-            response = `CON ${listAuctions(result, currentPage + 1, itemsPerPage)}`;
+            response += `${listAuctions(result, currentPage + 1, itemsPerPage)}`;
         } else {
             const selectedAuctionIndex = parseInt(textArray[0], 10) - 1;
             if (selectedAuctionIndex >= 0 && selectedAuctionIndex < result.length) {
@@ -62,7 +62,7 @@ function listAuctions(auctions, page, itemsPerPage) {
     const end = start + itemsPerPage;
     const paginatedAuctions = auctions.slice(start, end);
 
-    let response = ` Bid on our live auctions:\n`;
+    let response = `Bid on our live auctions:\n`;
     paginatedAuctions.forEach((auction, index) => {
         response += `${start + index + 1}. ${auction.auctionName}\n`;
     });
