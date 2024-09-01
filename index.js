@@ -27,9 +27,9 @@ app.post('/ussd', async (req, res) => {
     } = req.body;
 
     const textArray = text.split("*");
-    const currentPage = textArray[0] === "" || isNaN(textArray[0]) ? 1 : parseInt(textArray[0], 10); // Determine the current page from the user's input
+    const currentPage = textArray[0] === "" || isNaN(textArray[0]) ? 1 : parseInt(textArray[0], 10);
     const result = await getAuctions();
-    const itemsPerPage = 5;
+    const itemsPerPage = 10;
 
     // Check if the user selects to go back to the main menu
     if (textArray[textArray.length - 1] === "00") {
