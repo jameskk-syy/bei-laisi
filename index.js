@@ -66,7 +66,12 @@ app.post('/ussd', async (req, res) => {
     }
     else if(textArray.length === 3){
         const selectedOption = textArray[2];
-        response = `END ${selectedOption}`;
+        if(selectedOption === 1){
+            response = `END This is Airtel`;
+        }
+        else if(selectedOption === 2){
+            response = `END This is Momo.\n`;
+        }
         } 
 
     res.set('content-type', 'text/plain');
