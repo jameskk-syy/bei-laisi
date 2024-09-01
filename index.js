@@ -27,7 +27,7 @@ app.post('/ussd', async (req, res) => {
     } = req.body;
 
     const textArray = text.split("*");
-    const currentPage = textArray[0] === "" ? 1 : parseInt(textArray[0], 10); // Determine the current page from the user's input
+    const currentPage = textArray[0] === "" || isNaN(textArray[0]) ? 1 : parseInt(textArray[0], 10); // Determine the current page from the user's input
     const result = await getAuctions();
     const itemsPerPage = 5;
 
@@ -63,8 +63,11 @@ function listAuctions(auctions, page, itemsPerPage) {
         response += `${start + index + 1}. ${auction.auctionName}\n`;
     });
 
+    // If there are more items to show, offer the option for the next page
     if (end < auctions.length) {
         response += `\n#. Next page\n`;
+    } else {
+        response += `\n00. Go back to the main menu\n`;
     }
 
     return response;
