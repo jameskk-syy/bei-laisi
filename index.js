@@ -38,8 +38,9 @@ app.post('/ussd', async (req, res) => {
 
         if (selectedAuctionIndex >= 0 && selectedAuctionIndex < result.length) {
             const selectedAuction = result[selectedAuctionIndex];
-            response = `CON You selected ${selectedAuction.auctionName}\n`;
-            response += `Please enter your bid amount:`;
+            response = `CON place your bid on ${selectedAuction.auctionName} .\n`;
+            response += `1 Bid = UGX ${selectedAuction.price}`;
+            response += `Enter your Unique Bid Price from UGX ${selectedAuction.price} and above.`;
         } else {
             response = `END Invalid selection. Please try again.\n`;
         }
