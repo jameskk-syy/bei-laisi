@@ -14,6 +14,9 @@ app.use(bodyParser.urlencoded({extended:false}));
 const fireStoreDb = getFirestore(apps);
 const fireStoreCollection =  collection(fireStoreDb,"Auctions");
 
+app.get('/',(req,res)=>{
+    res.send('hello world');
+})
 app.post('/ussd',async(req,res)=>{
  let response = "";
  const {
