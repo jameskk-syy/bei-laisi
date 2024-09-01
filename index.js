@@ -38,11 +38,14 @@ app.post('/ussd', async (req, res) => {
     } else if (text === "") {
         response = `CON Welcome to Laisi Reverse Auctions \n\n`;
         response += listAuctions(result, 1, itemsPerPage);
-    } else if (textArray.length === 1) {
-        if (textArray[0] === "#") {
-            response += `${listAuctions(result, currentPage + 1, itemsPerPage)}`;
+    }else if (textArray.length === 1) {
+        const input = textArray[0];
+        if (input === "#") {
+            response = `CON ${listAuctions(result, currentPage + 1, itemsPerPage)}`;
         } else {
-            const selectedAuctionIndex = parseInt(textArray[0], 10) - 1;
+            const selectedOption = parseInt(input, 10);
+            const selectedAuctionIndex = (currentPage - 1) * itemsPerPage + selectedOption - 1;
+    
             if (selectedAuctionIndex >= 0 && selectedAuctionIndex < result.length) {
                 const selectedAuction = result[selectedAuctionIndex];
                 response = `CON You selected ${selectedAuction.auctionName}\n`;
@@ -52,6 +55,7 @@ app.post('/ussd', async (req, res) => {
             }
         }
     }
+    
 
     res.set('content-type', 'text/plain');
     res.send(response);
