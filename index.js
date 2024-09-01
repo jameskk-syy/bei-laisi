@@ -33,7 +33,7 @@ app.post('/ussd',async(req,res)=>{
   response += `Bid on our live auctions\n`;
   const result  = await getAuctions();
   result.forEach((resq,index)=>{
-    response += `${resq.auctionName}`
+    response += `${index+1} . ${resq.auctionName}`
   });
  }
  res.set('content-type:text/plain');
