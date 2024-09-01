@@ -30,11 +30,14 @@ app.post('/ussd',async(req,res)=>{
  if(text == ""){
 
   response = `CON Welcome Bid Laisi Reverse Auctions \n\n`;
-  response += `Bid on our live auctions\n`;
+  response += ` 1 Bid on our live auctions\n`;
   const result  = await getAuctions();
   result.forEach((resq,index)=>{
     response += `${index+1}. ${resq.auctionName}`
   });
+ }
+ else if("1*"){
+  response += 'hello ';
  }
  res.set('content-type:text/plain');
  res.send(response);
