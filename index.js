@@ -61,7 +61,8 @@ app.post('/ussd', async (req, res) => {
             }
         }
         else if(textArray.length == 3){
-           
+        const selectedOption = (textArray[0]);
+        response = `END ${selectedOption}`;
         } else {
             response = `END Invalid selection. Please try again.\n`;
         }
