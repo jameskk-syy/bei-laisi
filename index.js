@@ -28,17 +28,17 @@ app.post('/ussd', async (req, res) => {
 
     const textArray = text.split("*");
     const itemsPerPage = 5;
-
-    // Determine the current page based on the last valid page number
-    let currentPage = 1;
-    for (let i = 0; i < textArray.length; i++) {
-        if (!isNaN(textArray[i])) {
-            currentPage = parseInt(textArray[i], 10);
-        } else if (textArray[i] === "#") {
-            currentPage += 1;
-        }
-    }
     
+    // Determine the current page from the user's input
+    let currentPage = 1;
+    let lastSelection = textArray[textArray.length - 1];
+
+    if (lastSelection === "#") {
+        currentPage = parseInt(textArray[textArray.length - 2], 10) + 1;
+    } else if (!isNaN(lastSelection)) {
+        currentPage = Math.ceil(parseInt(lastSelection, 10) / itemsPerPage);
+    }
+
     const result = await getAuctions();
     const totalItems = result.length;
 
@@ -46,16 +46,16 @@ app.post('/ussd', async (req, res) => {
         // Initial menu
         response = `CON Welcome to Laisi Reverse Auctions \n\n`;
         response += listAuctions(result, 1, itemsPerPage);
-    } else if (textArray.includes("#")) {
+    } else if (lastSelection === "#") {
         // Next page logic
         response = `CON ${listAuctions(result, currentPage, itemsPerPage)}`;
-    } else if (textArray.includes("00")) {
+    } else if (lastSelection === "00") {
         // Go back to main menu
         response = `CON Welcome back to the main menu \n\n`;
         response += listAuctions(result, 1, itemsPerPage);
     } else {
         // User made a selection
-        const selectedOption = parseInt(textArray[textArray.length - 1], 10);
+        const selectedOption = parseInt(lastSelection, 10);
         const selectedAuctionIndex = (currentPage - 1) * itemsPerPage + selectedOption - 1;
 
         if (selectedAuctionIndex >= 0 && selectedAuctionIndex < totalItems) {
@@ -79,7 +79,7 @@ function listAuctions(auctions, page, itemsPerPage) {
 
     let response = "Bid on our live auctions:\n";
     paginatedAuctions.forEach((auction, index) => {
-        response += `${index + 1}. ${auction.auctionName}\n`;
+        response += `${start + index + 1}. ${auction.auctionName}\n`;
     });
 
     if (end < auctions.length) {
