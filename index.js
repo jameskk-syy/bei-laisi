@@ -60,7 +60,7 @@ app.post('/ussd', async (req, res) => {
                 // Here, you can add the logic to save the bid amount to the database.
             }
         }
-        else if(textArray.length == 3){
+        else if(textArray.length === 3){
         const selectedOption = (textArray[0]);
         response = `END ${selectedOption}`;
         } else {
