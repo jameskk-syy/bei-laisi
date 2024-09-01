@@ -27,29 +27,37 @@ app.post('/ussd', async (req, res) => {
     } = req.body;
 
     const textArray = text.split("*");
-    const currentPage = textArray[0] === "" || isNaN(textArray[0]) ? 1 : parseInt(textArray[0], 10); // Determine the current page from the user's input
-    const result = await getAuctions();
     const itemsPerPage = 5;
 
-    // Check if the user selects to go back to the main menu
-    if (textArray[textArray.length - 1] === "00") {
-        response = `CON Welcome back to the main menu \n\n`;
-        response += listAuctions(result, 1, itemsPerPage);
-    } else if (text === "") {
+    // Calculate the current page
+    const currentPage = textArray.includes("#") ? parseInt(textArray[textArray.length - 2], 10) + 1 : 1;
+    const selectedOption = textArray[textArray.length - 1]; // Get the last input from the user
+
+    const result = await getAuctions();
+    const totalItems = result.length;
+
+    if (text === "") {
+        // Initial menu
         response = `CON Welcome to Laisi Reverse Auctions \n\n`;
         response += listAuctions(result, 1, itemsPerPage);
-    } else if (textArray.length === 1) {
-        if (textArray[0] === "#") {
-            response = `CON ${listAuctions(result, currentPage + 1, itemsPerPage)}`;
+    } else if (selectedOption === "#") {
+        // Next page logic
+        response = `CON ${listAuctions(result, currentPage, itemsPerPage)}`;
+    } else if (selectedOption === "00") {
+        // Go back to main menu
+        response = `CON Welcome back to the main menu \n\n`;
+        response += listAuctions(result, 1, itemsPerPage);
+    } else {
+        // User made a selection
+        const selectedAuctionIndex = (currentPage - 1) * itemsPerPage + parseInt(selectedOption, 10) - 1;
+
+        if (selectedAuctionIndex >= 0 && selectedAuctionIndex < totalItems) {
+            const selectedAuction = result[selectedAuctionIndex];
+            response = `CON You selected ${selectedAuction.auctionName}\n`;
+            response += `Please enter your bid amount:`;
         } else {
-            const selectedAuctionIndex = parseInt(textArray[0], 10) - 1;
-            if (selectedAuctionIndex >= 0 && selectedAuctionIndex < result.length) {
-                const selectedAuction = result[selectedAuctionIndex];
-                response = `CON You selected ${selectedAuction.auctionName}\n`;
-                response += `Please enter your bid amount:`;
-            } else {
-                response = `CON Invalid selection. Please try again.\n`;
-            }
+            response = `CON Invalid selection. Please try again.\n`;
+            response += listAuctions(result, currentPage, itemsPerPage);
         }
     }
 
@@ -64,14 +72,13 @@ function listAuctions(auctions, page, itemsPerPage) {
 
     let response = "Bid on our live auctions:\n";
     paginatedAuctions.forEach((auction, index) => {
-        response += `${start + index + 1}. ${auction.auctionName}\n`;
+        response += `${index + 1}. ${auction.auctionName}\n`;
     });
 
-    // If there are more items to show, offer the option for the next page
     if (end < auctions.length) {
         response += `\n#. Next page\n`;
     }
-    
+
     response += `\n00. Go back to the main menu\n`;
 
     return response;
