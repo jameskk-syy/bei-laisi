@@ -41,17 +41,17 @@ app.post('/ussd', async (req, res) => {
     }else if (textArray.length === 1) {
         const input = textArray[0];
         if (input === "#") {
-            response += `${listAuctions(result, currentPage + 1, itemsPerPage)}`;
+            response = `CON ${listAuctions(result, currentPage + 1, itemsPerPage)}`;
         } else {
             const selectedOption = parseInt(input, 10);
             const selectedAuctionIndex = (currentPage - 1) * itemsPerPage + selectedOption - 1;
     
             if (selectedAuctionIndex >= 0 && selectedAuctionIndex < result.length) {
                 const selectedAuction = result[selectedAuctionIndex];
-                response += `You selected ${selectedAuction.auctionName}\n`;
+                response = `CON You selected ${selectedAuction.auctionName}\n`;
                 response += `Please enter your bid amount:`;
             } else {
-                response = `CON Invalid selection. Please try again.\n`;
+                response = `END Invalid selection. Please try again.\n`;
             }
         }
     }
